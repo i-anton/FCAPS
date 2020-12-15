@@ -81,7 +81,7 @@ private:
 			lpChain(lpc) {}
 
 		// Compare potential of patterns
-		bool operator()(const CPattern& a, const CPattern& b);
+		bool operator()(const CPattern& a, const CPattern& b) const;
 	private:
 		const CSharedPtr<ILocalProjectionChain>& lpChain;
 	};

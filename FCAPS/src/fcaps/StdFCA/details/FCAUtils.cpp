@@ -20,13 +20,14 @@ using namespace std;
 using namespace boost;
 using namespace rapidjson;
 
-template<typename T> bool isfinite(T arg)
-{
-    return arg == arg && 
-           arg != std::numeric_limits<T>::infinity() &&
-           arg != -std::numeric_limits<T>::infinity();
+namespace FcaUtils {
+	template<typename T> bool isfinite(T arg)
+	{
+		return arg == arg &&
+			arg != std::numeric_limits<T>::infinity() &&
+			arg != -std::numeric_limits<T>::infinity();
+	}
 }
-
 ////////////////////////////////////////////////////////////////////
 
 class CInterestingConcepts {
@@ -306,7 +307,7 @@ void CLatticeWriter::fillConceptJson( TLatticeNodeId nodeId, MemoryPoolAllocator
 	}
 	if( params.OutStabEstimation ) {
 		assert( cData.size() == lattice.GetNodes().size() );
-		if( isfinite( cData[nodeId].MinStab ) && cData[nodeId].MaxStab > 0 ) {
+		if(FcaUtils::isfinite( cData[nodeId].MinStab ) && cData[nodeId].MaxStab > 0 ) {
 			if( params.IsStabilityInLog ) {
 				result
 					.AddMember( "LStab", Value().SetDouble( cData[nodeId].MinStab ), alloc )
@@ -322,7 +323,7 @@ void CLatticeWriter::fillConceptJson( TLatticeNodeId nodeId, MemoryPoolAllocator
 		assert( sData.size() == lattice.GetNodes().size() );
 		if( params.IsStabilityInLog ) {
 			const double stab = -log( 1 - sData[nodeId].Stability ) / log( 2 );
-			if( isfinite( stab ) ) {
+			if(FcaUtils::isfinite( stab ) ) {
 				result.AddMember( "Stab", Value().SetDouble( stab ), alloc );
 			} else {
 				result.AddMember( "Stab", Value().SetString( StringRef( "inf" ) ), alloc );
@@ -365,7 +366,7 @@ bool CLatticeWriter::isNodeInteresting( TLatticeNodeId node )
 	if( params.OutStability ) {
 		const double stab = -log( 1 - sData[node].Stability ) / log( 2 );
 		if (params.IsStabilityInLog
-				? isfinite(stab) && stab < params.MinStab: sData[node].Stability < params.MinStab)
+				? FcaUtils::isfinite(stab) && stab < params.MinStab: sData[node].Stability < params.MinStab)
 		{
 			return false;
 		}
